@@ -1,9 +1,14 @@
-FROM openjdk:8-jre-slim
+# Use OpenJDK 17 (or 11 if you prefer)
+FROM eclipse-temurin:17-jdk-jammy
 
+# Add a volume to store temp files
 VOLUME /tmp
 
-COPY target/springboot-application-0.0.1-SNAPSHOT.jar springboot-application.jar
+# Copy the JAR file into the container
+ADD target/*.jar app.jar
 
-ENTRYPOINT ["java", "-jar", "/springboot-application.jar"]
+# Run the application
+ENTRYPOINT ["java", "-jar", "/app.jar"]
 
+# Expose port 8080
 EXPOSE 8080
