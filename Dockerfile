@@ -1,14 +1,19 @@
-# Use OpenJDK 17 (or 11 if you prefer)
-FROM eclipse-temurin:17-jdk-jammy
+# Stage 1: Build React App
+FROM node:18 AS build
 
-# Add a volume to store temp files
-VOLUME /tmp
+WORKDIR /app
 
-# Copy the JAR file into the container
-ADD target/*.jar app.jar
+COPY . .
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+RUN npm install
 
-# Expose port 8080
-EXPOSE 8080
+RUN npm run build
+
+# Stage 2: Serve React App with NGINX
+FROM nginx:stable-alpine
+
+COPY --from=build /app/build /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
